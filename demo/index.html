@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplePos - Restaurant POS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo-container">
+                <img src="../assets/logo.png" alt="SimplePos Logo" class="brand-logo" onerror="this.src='https://via.placeholder.com/50/8b5cf6/ffffff?text=SP'">
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="pos" title="Punto de Venta">
+                    <i class="fa-solid fa-cash-register"></i>
+                </li>
+                <li class="nav-item" data-tab="tables" title="Mesas">
+                    <i class="fa-solid fa-chair"></i>
+                </li>
+                <li class="nav-item" data-tab="reports" title="Reportes">
+                    <i class="fa-solid fa-chart-simple"></i>
+                </li>
+            </ul>
+            <div class="bottom-menu">
+                <li class="nav-item" data-tab="settings" title="Ajustes">
+                    <i class="fa-solid fa-gear"></i>
+                </li>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search" placeholder="Buscar productos, mesas...">
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span class="user-name">Administrador</span>
+                        <span class="user-role" id="current-table-label">Sin Mesa Seleccionada</span>
+                    </div>
+                    <div class="avatar">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=8b5cf6&color=fff" alt="Avatar">
+                    </div>
+                </div>
+            </header>
+
+            <!-- VIEW: POS (Point of Sale) -->
+            <div id="view-pos" class="view-section active">
+                <div class="categories" id="categories-container">
+                    <!-- JS Injected Categories -->
+                </div>
+                <div class="products-grid" id="products-container">
+                    <!-- JS Injected Products -->
+                </div>
+            </div>
+
+            <!-- VIEW: Tables -->
+            <div id="view-tables" class="view-section" style="display: none;">
+                <h2>Gestión de Mesas</h2>
+                <div class="tables-grid" id="tables-container">
+                    <!-- JS Injected Tables -->
+                </div>
+            </div>
+
+            <!-- VIEW: Reports -->
+            <div id="view-reports" class="view-section" style="display: none;">
+                <h2>Reportes y Cierres</h2>
+                <div class="reports-container">
+                    <div class="report-card glass">
+                        <h3>Ventas de Hoy</h3>
+                        <p class="report-value">€<span id="report-today">0.00</span></p>
+                    </div>
+                    <div class="report-card glass">
+                        <h3>Total Órdenes</h3>
+                        <p class="report-value" id="report-orders">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: Settings -->
+            <div id="view-settings" class="view-section" style="display: none;">
+                <h2>Ajustes del Sistema</h2>
+                <div class="settings-container">
+                    <!-- Products Management -->
+                    <div class="settings-card glass">
+                        <h3>Añadir Producto Nuevo</h3>
+                        <div class="form-group">
+                            <input type="text" id="new-prod-name" placeholder="Nombre del producto">
+                            <input type="number" id="new-prod-price" placeholder="Precio (€)" step="0.01">
+                            <input type="text" id="new-prod-cat" placeholder="Categoría (ej: Cafetería)">
+                            <!-- File input is complex for purely local storage due to data URLs limits, we will use a URL for now or just default placeholder -->
+                            <input type="text" id="new-prod-img" placeholder="URL de Imagen (Opcional)">
+                            <button class="btn-primary" onclick="addNewProduct()">Guardar Producto</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card glass">
+                        <h3>Usuarios del Sistema</h3>
+                        <div class="user-list">
+                            <div class="user-item">Administrador (Pin: 1234)</div>
+                            <div class="user-item">Cajero 1 (Pin: 0000)</div>
+                            <button class="btn-secondary" style="margin-top: 10px;">+ Añadir Usuario</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Right Sidebar (Cart) -->
+        <aside class="cart-panel">
+            <div class="cart-header">
+                <h2>Orden Actual</h2>
+                <span class="order-id" id="cart-order-id">#ORD-001</span>
+            </div>
+
+            <div class="cart-items" id="cart-container">
+                <!-- Cart items will be injected via JS -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">€0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Impuestos (10%)</span>
+                    <span id="tax">€0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total a Pagar</span>
+                    <span id="total">€0.00</span>
+                </div>
+            </div>
+
+            <button class="checkout-btn" onclick="processCheckout()">
+                <span>Cobrar</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </aside>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
