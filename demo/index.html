@@ -3,122 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SimplePos - Restaurant POS</title>
+    <title>SimplePos - Kiosk</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Kiosk specific overrides */
+        .sidebar { display: none; }
+        .top-header { justify-content: center; margin-bottom: 20px; }
+        .search-bar { width: 600px; height: 60px; font-size: 20px; border-radius: 30px; }
+        .search-bar input { font-size: 20px; }
+        .user-profile { display: none; }
+        .cart-panel { width: 450px; }
+        
+        /* Welcome Screen overlay */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color);
+            background-image: url('../assets/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        #welcome-screen .glass-card {
+            background: rgba(15, 17, 26, 0.8);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--accent-primary);
+            padding: 80px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 0 50px var(--accent-glow);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        #welcome-screen .glass-card:hover {
+            transform: scale(1.05);
+        }
+        
+        #welcome-screen h1 { font-size: 64px; font-weight: 800; margin-bottom: 20px; }
+        #welcome-screen p { font-size: 24px; color: var(--text-muted); }
+        
+        /* Thank you screen */
+        #thanks-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 17, 26, 0.95);
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #thanks-screen h1 { font-size: 50px; color: var(--text-main); margin-bottom: 20px; }
+        #thanks-screen p { font-size: 24px; color: var(--accent-secondary); }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="logo-container">
-                <img src="../assets/logo.png" alt="SimplePos Logo" class="brand-logo" onerror="this.src='https://via.placeholder.com/50/8b5cf6/ffffff?text=SP'">
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item active" data-tab="pos" title="Punto de Venta">
-                    <i class="fa-solid fa-cash-register"></i>
-                </li>
-                <li class="nav-item" data-tab="tables" title="Mesas">
-                    <i class="fa-solid fa-chair"></i>
-                </li>
-                <li class="nav-item" data-tab="reports" title="Reportes">
-                    <i class="fa-solid fa-chart-simple"></i>
-                </li>
-            </ul>
-            <div class="bottom-menu">
-                <li class="nav-item" data-tab="settings" title="Ajustes">
-                    <i class="fa-solid fa-gear"></i>
-                </li>
-            </div>
-        </nav>
+    <!-- Kiosk Welcome Screen -->
+    <div id="welcome-screen" onclick="startOrder()">
+        <div class="glass-card">
+            <h1>Bienvenido</h1>
+            <p>Toca la pantalla para hacer tu pedido</p>
+        </div>
+    </div>
+    
+    <!-- Kiosk Thank you screen -->
+    <div id="thanks-screen">
+        <h1>¡Gracias por tu pedido!</h1>
+        <p>Por favor, retira tu ticket y procede a recoger tu pedido.</p>
+    </div>
 
+    <div class="app-container">
         <!-- Main Content Area -->
-        <main class="main-content">
+        <main class="main-content" style="padding: 40px 60px;">
             <header class="top-header">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="global-search" placeholder="Buscar productos, mesas...">
-                </div>
-                <div class="user-profile">
-                    <div class="user-info">
-                        <span class="user-name">Administrador</span>
-                        <span class="user-role" id="current-table-label">Sin Mesa Seleccionada</span>
-                    </div>
-                    <div class="avatar">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=8b5cf6&color=fff" alt="Avatar">
-                    </div>
+                    <input type="text" id="global-search" placeholder="¿Qué te apetece hoy?">
                 </div>
             </header>
 
-            <!-- VIEW: POS (Point of Sale) -->
-            <div id="view-pos" class="view-section active">
-                <div class="categories" id="categories-container">
-                    <!-- JS Injected Categories -->
-                </div>
-                <div class="products-grid" id="products-container">
-                    <!-- JS Injected Products -->
-                </div>
+            <div class="categories" id="categories-container" style="justify-content: center; gap: 20px;">
+                <!-- JS Injected Categories -->
             </div>
 
-            <!-- VIEW: Tables -->
-            <div id="view-tables" class="view-section" style="display: none;">
-                <h2>Gestión de Mesas</h2>
-                <div class="tables-grid" id="tables-container">
-                    <!-- JS Injected Tables -->
-                </div>
+            <!-- Products Grid -->
+            <div class="products-grid" id="products-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                <!-- JS Injected Products -->
             </div>
-
-            <!-- VIEW: Reports -->
-            <div id="view-reports" class="view-section" style="display: none;">
-                <h2>Reportes y Cierres</h2>
-                <div class="reports-container">
-                    <div class="report-card glass">
-                        <h3>Ventas de Hoy</h3>
-                        <p class="report-value">€<span id="report-today">0.00</span></p>
-                    </div>
-                    <div class="report-card glass">
-                        <h3>Total Órdenes</h3>
-                        <p class="report-value" id="report-orders">0</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW: Settings -->
-            <div id="view-settings" class="view-section" style="display: none;">
-                <h2>Ajustes del Sistema</h2>
-                <div class="settings-container">
-                    <!-- Products Management -->
-                    <div class="settings-card glass">
-                        <h3>Añadir Producto Nuevo</h3>
-                        <div class="form-group">
-                            <input type="text" id="new-prod-name" placeholder="Nombre del producto">
-                            <input type="number" id="new-prod-price" placeholder="Precio (€)" step="0.01">
-                            <input type="text" id="new-prod-cat" placeholder="Categoría (ej: Cafetería)">
-                            <!-- File input is complex for purely local storage due to data URLs limits, we will use a URL for now or just default placeholder -->
-                            <input type="text" id="new-prod-img" placeholder="URL de Imagen (Opcional)">
-                            <button class="btn-primary" onclick="addNewProduct()">Guardar Producto</button>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-card glass">
-                        <h3>Usuarios del Sistema</h3>
-                        <div class="user-list">
-                            <div class="user-item">Administrador (Pin: 1234)</div>
-                            <div class="user-item">Cajero 1 (Pin: 0000)</div>
-                            <button class="btn-secondary" style="margin-top: 10px;">+ Añadir Usuario</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </main>
 
         <!-- Right Sidebar (Cart) -->
         <aside class="cart-panel">
             <div class="cart-header">
-                <h2>Orden Actual</h2>
-                <span class="order-id" id="cart-order-id">#ORD-001</span>
+                <h2>Tu Pedido</h2>
+                <span class="order-id" id="cart-order-id">Mesa/Pedido Nuevo</span>
             </div>
 
             <div class="cart-items" id="cart-container">
@@ -140,14 +127,14 @@
                 </div>
             </div>
 
-            <button class="checkout-btn" onclick="processCheckout()">
-                <span>Cobrar</span>
-                <i class="fa-solid fa-arrow-right"></i>
+            <button class="checkout-btn" onclick="processKioskCheckout()">
+                <span>Pagar Pedido</span>
+                <i class="fa-solid fa-credit-card"></i>
             </button>
+            <button class="btn-secondary" style="margin-top: 15px; width: 100%; border: none;" onclick="cancelOrder()">Cancelar Pedido</button>
         </aside>
     </div>
 
-    <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
     <script src="script.js"></script>
